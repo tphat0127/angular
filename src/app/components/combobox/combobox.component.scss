@@ -1,0 +1,6 @@
+@import '../../@theme/styles/themes';
+@include nb-install-component() {
+    nb-select {
+    width: 100%;
+  }
+}
