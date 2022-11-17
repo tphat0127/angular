@@ -1,44 +1,98 @@
+<button>
+    <mat-icon (click)="AddNewRow()" class="add-button">add_box</mat-icon>
+  </button>
+<form [formGroup]="form" autocomplete="off">
+    <ng-container formArrayName="Rows">
+        <table #table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-<div class="example-container">
-    <div class="example-loading-shade"
-        *ngIf="isLoadingResults || isRateLimitReached">
-        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-        <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
-        GitHub's API rate limit has been reached. It will be reset in one minute.
-    </div>
-</div>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> id </th>
+                <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+                  <mat-form-field style="width: 70px;"
+                    [appearance]="form.get('Rows').value[i].isEditable? 'none' : 'legacy'">
+                    <input matInput type="text" 
+                        formControlName="id"
+                        [readonly]="form.get('Rows').value[i].isEditable"
+                        [ngClass]="{ 'is-invalid': true }">
+                    <div formControlName="id" *ngIf="form.get('Rows').at(i).get('id').errors">id is required</div>
+                  </mat-form-field>
+                </td>
+              </ng-container>
 
-    <div class="example-table-container">
-        <table mat-table [dataSource]="dataSource" class="example-table">
-            <!-- Weight Column -->
-        <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> id </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-        </ng-container>
-    
-        <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef> email </th>
-            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
-        </ng-container>
-    
-        <ng-container matColumnDef="username">
-            <th mat-header-cell *matHeaderCellDef> username </th>
-            <td mat-cell *matCellDef="let element"> {{element.username}} </td>
-        </ng-container>
-    
-        <ng-container matColumnDef="password">
-            <th mat-header-cell *matHeaderCellDef> password </th>
-            <td mat-cell *matCellDef="let element"> {{element.password}} </td>
-        </ng-container>
-    
-        <ng-container matColumnDef="phone">
-            <th mat-header-cell *matHeaderCellDef> phone </th>
-            <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
-        </ng-container>
-    
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef> email </th>
+                <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+                  <mat-form-field style="width: 70px;"
+                    [appearance]="form.get('Rows').value[i].isEditable? 'none' : 'legacy'">
+                    <input matInput type="text" formControlName="email" [readonly]="form.get('Rows').value[i].isEditable">
+                  </mat-form-field>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef> Name </th>
+                <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+                  <mat-form-field style="width: 70px;"
+                    [appearance]="form.get('Rows').value[i].isEditable? 'none' : 'legacy'">
+                    <input matInput type="text" formControlName="phone" [readonly]="form.get('Rows').value[i].isEditable">
+                  </mat-form-field>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="username">
+                <th mat-header-cell *matHeaderCellDef> username </th>
+                <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+                  <mat-form-field style="width: 70px;"
+                    [appearance]="form.get('Rows').value[i].isEditable? 'none' : 'legacy'"> 
+                    <input matInput type="text" formControlName="username" [readonly]="form.get('Rows').value[i].isEditable">
+                   
+                  </mat-form-field>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="password">
+                <th mat-header-cell *matHeaderCellDef> password </th>
+                <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+                  <mat-form-field style="width: 70px;"
+                    [appearance]="form.get('Rows').value[i].isEditable? 'none' : 'legacy'">
+                    <input matInput type="text" formControlName="password" [readonly]="form.get('Rows').value[i].isEditable">
+                  </mat-form-field>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef> Action </th>
+                <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
+                  <button mat-icon-button class="material-icons app-toolbar-menu save-button"
+                                          matTooltip="Save Changes" (click)="saveInline(form,i)"
+                                          *ngIf="!form.get('Rows').value[i].isEditable" color="primary">
+                                          <mat-icon>check_circle</mat-icon>
+                                      </button>
+      
+                  <button mat-icon-button class="material-icons app-toolbar-menu cancel-button"
+                                          matTooltip="Cancel Changes" color="warn"
+                                          (click)="cancelInline(form,i)"
+                                          *ngIf="!form.get('Rows').value[i].isEditable">
+                                          <mat-icon>cancel</mat-icon>
+                                      </button>
+      
+                  <button mat-icon-button class="material-icons app-toolbar-menu save-button"
+                                          *ngIf="form.get('Rows').value[i].isEditable"
+                                          matTooltip="Edit" color="primary" (click)="editInline(form,i)">
+                                          <mat-icon>edit</mat-icon>
+                                      </button>
+      
+                  <button mat-icon-button class="material-icons app-toolbar-menu delete-button"
+                                          *ngIf="form.get('Rows').value[i].isEditable"
+                                          matTooltip="Delete" color="warn" (click)="deleteInline(form,i)">
+                                          <mat-icon>delete</mat-icon>
+                                      </button>
+                </td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-    </div>
-
-</div>
+    </ng-container>
+</form>
